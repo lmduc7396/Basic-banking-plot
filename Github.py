@@ -23,7 +23,7 @@ bank_type = ['SOCB', 'Private_1', 'Private_2', 'Private_3', 'Sector']
 tickers = sorted([x for x in df['TICKER'].unique() if isinstance(x, str) and len(x) == 3])
 x_options = tickers + bank_type
 
-X = st.sidebar.selectbox("Select Stock Ticker or Bank Type (X):", x_options)
+X = st.sidebar.multiselect("Select Stock Ticker or Bank Type (X):", x_options)
 Y = st.sidebar.number_input("Number of latest periods to plot (Y):", min_value=1, max_value=20, value=10)
 Z = st.sidebar.selectbox(
     "Select Value Column (Z):", keyitem['Name'].tolist()
@@ -33,14 +33,19 @@ df = df.sort_values(by=['TICKER', 'ENDDATE_x'])
 item=keyitem[keyitem['Name']==Z]['KeyCode']
 item=item.iloc[0]
 
-if len(X)==3:
-    df_temp=df[df.TICKER==X]
-else:
-    df_temp=df[df['TICKER'].apply(len) >3]
-    df_temp=df_temp[df_temp['Type']==X]
-    df_temp=df_temp[df_temp['TICKER']==df_temp.iloc[0]['TICKER']]
+results = []
+for item in X:
+    if len(item)==3:
+        matched_rows=df[df['TICKER']==item]
+    else:
+        matched_rows=df[(df['Type']==item) & (df['TICKER'].apply(len) >3)]
+        matched_rows=matched_rows[matched_rows['TICKER']==matched_rows.iloc[0]['TICKER']]
+        if not matched_rows.empty:
+            results.append(matched_rows)
 
-df_tempY = df_temp.tail(Y)
+    if results:
+        df_temp = pd.concat(results)
+        df_tempY = df_temp.tail(Y)
 
 # Plotting with Plotly
 fig = go.Figure(
