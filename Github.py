@@ -1,0 +1,57 @@
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+
+# Load your data
+df_quarter = pd.read_csv('dfsectorquarter.csv')
+df_year = pd.read_csv('dfsectoryear.csv')
+
+# Sidebar: Choose database
+db_option = st.sidebar.radio(
+    "Choose database:",
+    ("Quarterly", "Yearly")
+)
+
+if db_option == "Quarterly":
+    df = df_quarter.copy()
+else:
+    df = df_year.copy()
+
+# Define your options
+bank_type = ['SOCB', 'Private_1', 'Private_2', 'Private_3', 'Sector']
+tickers = sorted([x for x in df['TICKER'].unique() if isinstance(x, str) and len(x) == 3])
+x_options = tickers + bank_type
+
+X = st.sidebar.selectbox("Select Stock Ticker or Bank Type (X):", x_options)
+Y = st.sidebar.number_input("Number of latest periods to plot (Y):", min_value=1, max_value=100, value=10)
+Z = st.sidebar.selectbox(
+    "Select Value Column (Z):",
+    [col for col in df.columns if col not in ['TICKER', 'Type', 'Date_Quarter', 'ENDDATE_x']]
+)
+
+df = df.sort_values(by=['TICKER', 'ENDDATE_x'])
+
+if X in bank_type:
+    df_temp = df[df['Type'] == X]
+else:
+    df_temp = df[df['TICKER'] == X]
+
+df_tempY = df_temp.tail(Y)
+
+# Plotting with Plotly
+fig = go.Figure(
+    data=[
+        go.Bar(
+            x=df_tempY['Date_Quarter'],
+            y=df_tempY[Z]
+        )
+    ]
+)
+fig.update_layout(
+    title=f'Bar plot of {Z} by Quarter',
+    xaxis_title='Date_Quarter',
+    yaxis_title=Z
+)
+fig.update_yaxes(tickformat=".2%")
+
+st.plotly_chart(fig, use_container_width=True)
