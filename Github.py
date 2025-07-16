@@ -55,7 +55,7 @@ for x in X:
                 x=df_tempY['Date_Quarter'],
                 y=df_tempY[value_col],
                 mode='lines+markers',
-                name=f"{x} ({primary_ticker})"
+                name=f"{x}"
             ))
 
 if not fig.data:
