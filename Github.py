@@ -7,6 +7,11 @@ df_quarter = pd.read_csv('dfsectorquarter.csv')
 df_year = pd.read_csv('dfsectoryear.csv')
 keyitem = pd.read_excel('Key_items.xlsx')
 
+#Page setting
+st.set_page_config(
+    page_title="Project Banking Online"
+st.set_page_config(layout="wide")
+
 # Sidebar: Choose database
 db_option = st.sidebar.radio("Choose database:", ("Quarterly", "Yearly"))
 
@@ -59,6 +64,8 @@ for i in range(0, len(Z), 2):
                         name=x
                     ))
         fig.update_layout(
+            width=1000,  # Increase this as needed
+            height=450, # Or taller if you want
             title=f'Line plot of {", ".join(X)}: {z_name}',
             xaxis_title='Date_Quarter',
             yaxis_title=z_name
