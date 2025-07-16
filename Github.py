@@ -64,8 +64,8 @@ for i in range(0, len(Z), 2):
                         name=x
                     ))
         fig.update_layout(
-            width=1050,  # Increase this as needed
-            height=450, # Or taller if you want
+            width=1200,  # Increase this as needed
+            height=500, # Or taller if you want
             title=f'Line plot of {", ".join(X)}: {z_name}',
             xaxis_title='Date_Quarter',
             yaxis_title=z_name
