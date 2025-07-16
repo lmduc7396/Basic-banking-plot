@@ -22,49 +22,44 @@ x_options = tickers + bank_type
 
 X = st.sidebar.multiselect("Select Stock Ticker or Bank Type (X):", x_options)
 Y = st.sidebar.number_input("Number of latest periods to plot (Y):", min_value=1, max_value=20, value=10)
-Z = st.sidebar.selectbox("Select Value Column (Z):", keyitem['Name'].tolist())
+Z = st.sidebar.multiselect(
+    "Select Value Column(s) (Z):", 
+    keyitem['Name'].tolist()
+)
+if len(Z) > 4:
+    st.warning("Please select up to 4 metrics only!")
+    Z = Z[:4]
 
-# Get the code for Z (column name)
-code_row = keyitem[keyitem['Name'] == Z]['KeyCode']
-if not code_row.empty:
-    value_col = code_row.iloc[0]
-else:
-    value_col = Z  # fallback
-
-df = df.sort_values(by=['TICKER', 'ENDDATE_x'])
-
-fig = go.Figure()
-
-for x in X:
-    if len(x) == 3:  # Stock ticker
-        matched_rows = df[df['TICKER'] == x]
-        if not matched_rows.empty:
-            df_tempY = matched_rows.tail(Y)
-            fig.add_trace(go.Scatter(
-                x=df_tempY['Date_Quarter'],
-                y=df_tempY[value_col],
-                mode='lines+markers',
-                name=x
-            ))
-    else:  # Bank type
-        matched_rows = df[(df['Type'] == x) & (df['TICKER'].apply(len) > 3)]
-        if not matched_rows.empty:
-            primary_ticker = matched_rows.iloc[0]['TICKER']
-            df_tempY = matched_rows[matched_rows['TICKER'] == primary_ticker].tail(Y)
-            fig.add_trace(go.Scatter(
-                x=df_tempY['Date_Quarter'],
-                y=df_tempY[value_col],
-                mode='lines+markers',
-                name=f"{x}"
-            ))
-
-if not fig.data:
-    st.warning("No data matched your selection. Please adjust X or check your dataset.")
-else:
+# Loop for each Z
+for z_name in Z:
+    value_col = keyitem[keyitem['Name']==z_name]['KeyCode'].iloc[0]
+    fig = go.Figure()
+    for x in X:
+        if len(x) == 3:  # Stock ticker
+            matched_rows = df[df['TICKER'] == x]
+            if not matched_rows.empty:
+                df_tempY = matched_rows.tail(Y)
+                fig.add_trace(go.Scatter(
+                    x=df_tempY['Date_Quarter'],
+                    y=df_tempY[value_col],
+                    mode='lines+markers',
+                    name=x
+                ))
+        else:  # Bank type
+            matched_rows = df[(df['Type'] == x) & (df['TICKER'].apply(len) > 3)]
+            if not matched_rows.empty:
+                primary_ticker = matched_rows.iloc[0]['TICKER']
+                df_tempY = matched_rows[matched_rows['TICKER'] == primary_ticker].tail(Y)
+                fig.add_trace(go.Scatter(
+                    x=df_tempY['Date_Quarter'],
+                    y=df_tempY[value_col],
+                    mode='lines+markers',
+                    name=x
+                ))
     fig.update_layout(
-        title=f'Line chart of {", ".join(X)} {Z}',
+        title=f'Line plot of {', '.join(X)}: {z_name}',
         xaxis_title='Date_Quarter',
-        yaxis_title=Z
+        yaxis_title=z_name
     )
     fig.update_yaxes(tickformat=".2%")
     st.plotly_chart(fig, use_container_width=True)
