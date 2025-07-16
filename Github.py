@@ -31,10 +31,12 @@ Z = st.sidebar.selectbox(
 
 df = df.sort_values(by=['TICKER', 'ENDDATE_x'])
 
-if X in bank_type:
-    df_temp = df[df['Type'] == X]
+if len(X)==3:
+    df_temp=df[df.TICKER==X]
 else:
-    df_temp = df[df['TICKER'] == X]
+    df_temp=df[df['TICKER'].apply(len) >3]
+    df_temp=df_temp[df_temp['Type']==X]
+    df_temp=df_temp[df_temp['TICKER']==df_temp.iloc[0]['TICKER']]
 
 df_tempY = df_temp.tail(Y)
 
