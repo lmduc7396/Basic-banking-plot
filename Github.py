@@ -34,6 +34,7 @@ if len(Z) > 4:
 for i in range(0, len(Z), 2):
     cols = st.columns(2)
     for j, z_name in enumerate(Z[i:i+2]):
+        cols[j].plotly_chart(fig, key=f"plot_{j}_{z_name}")
         value_col = keyitem[keyitem['Name']==z_name]['KeyCode'].iloc[0]
         fig = go.Figure()
         for x in X:
