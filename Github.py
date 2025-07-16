@@ -9,8 +9,8 @@ keyitem = pd.read_excel('Key_items.xlsx')
 
 #Page setting
 st.set_page_config(
-    page_title="Project Banking Online")
-st.set_page_config(layout="wide")
+    page_title="Project Banking Online",
+    layout="wide")
 
 # Sidebar: Choose database
 db_option = st.sidebar.radio("Choose database:", ("Quarterly", "Yearly"))
@@ -64,7 +64,7 @@ for i in range(0, len(Z), 2):
                         name=x
                     ))
         fig.update_layout(
-            width=1000,  # Increase this as needed
+            width=1050,  # Increase this as needed
             height=450, # Or taller if you want
             title=f'Line plot of {", ".join(X)}: {z_name}',
             xaxis_title='Date_Quarter',
