@@ -11,6 +11,7 @@ keyitem = pd.read_excel('Key_items.xlsx')
 st.set_page_config(
     page_title="Project Banking Online",
     layout="wide")
+st.subheader("Project Banking Online")
 
 # Sidebar: Choose database
 db_option = st.sidebar.radio("Choose database:", ("Quarterly", "Yearly"))
@@ -31,9 +32,6 @@ Z = st.sidebar.multiselect(
     "Select Value Column(s) (Z):", 
     keyitem['Name'].tolist()
 )
-if len(Z) > 4:
-    st.warning("Please select up to 4 metrics only!")
-    Z = Z[:4]
 
 # Create columns for every 2 charts
 for i in range(0, len(Z), 2):
@@ -64,8 +62,8 @@ for i in range(0, len(Z), 2):
                         name=x
                     ))
         fig.update_layout(
-            width=1200,  # Increase this as needed
-            height=500, # Or taller if you want
+            width=1200,  
+            height=500, 
             title=f'Line plot of {", ".join(X)}: {z_name}',
             xaxis_title='Date_Quarter',
             yaxis_title=z_name
