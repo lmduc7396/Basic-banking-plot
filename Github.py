@@ -22,9 +22,9 @@ else:
     df = df_year.copy()
 
 # Define your options
-bank_type = ['SOCB', 'Private_1', 'Private_2', 'Private_3', 'Sector']
+bank_type = ['Sector', 'SOCB', 'Private_1', 'Private_2', 'Private_3']
 tickers = sorted([x for x in df['TICKER'].unique() if isinstance(x, str) and len(x) == 3])
-x_options = tickers + bank_type
+x_options = bank_type + tickers
 
 X = st.sidebar.multiselect("Select Stock Ticker or Bank Type (X):", x_options)
 Y = st.sidebar.number_input("Number of latest periods to plot (Y):", min_value=1, max_value=20, value=10)
