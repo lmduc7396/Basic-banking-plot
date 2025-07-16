@@ -9,7 +9,7 @@ keyitem = pd.read_excel('Key_items.xlsx')
 
 #Page setting
 st.set_page_config(
-    page_title="Project Banking Online"
+    page_title="Project Banking Online")
 st.set_page_config(layout="wide")
 
 # Sidebar: Choose database
