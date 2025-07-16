@@ -24,47 +24,47 @@ X = st.sidebar.multiselect("Select Stock Ticker or Bank Type (X):", x_options)
 Y = st.sidebar.number_input("Number of latest periods to plot (Y):", min_value=1, max_value=20, value=10)
 Z = st.sidebar.selectbox("Select Value Column (Z):", keyitem['Name'].tolist())
 
-# Get the column name for Z
+# Get the code for Z (column name)
 code_row = keyitem[keyitem['Name'] == Z]['KeyCode']
 if not code_row.empty:
     value_col = code_row.iloc[0]
 else:
-    value_col = Z  # fallback, just in case
+    value_col = Z  # fallback
 
 df = df.sort_values(by=['TICKER', 'ENDDATE_x'])
 
-results = []
+fig = go.Figure()
+
 for x in X:
     if len(x) == 3:  # Stock ticker
         matched_rows = df[df['TICKER'] == x]
         if not matched_rows.empty:
-            results.append(matched_rows)
+            df_tempY = matched_rows.tail(Y)
+            fig.add_trace(go.Scatter(
+                x=df_tempY['Date_Quarter'],
+                y=df_tempY[value_col],
+                mode='lines+markers',
+                name=x
+            ))
     else:  # Bank type
         matched_rows = df[(df['Type'] == x) & (df['TICKER'].apply(len) > 3)]
         if not matched_rows.empty:
-            # Get the latest group for the first TICKER in this type
             primary_ticker = matched_rows.iloc[0]['TICKER']
-            matched_rows = matched_rows[matched_rows['TICKER'] == primary_ticker]
-            results.append(matched_rows)
-
-if results:
-    df_temp = pd.concat(results)
-    df_tempY = df_temp.tail(Y)
-
-    fig = go.Figure(
-        data=[
-            go.Bar(
+            df_tempY = matched_rows[matched_rows['TICKER'] == primary_ticker].tail(Y)
+            fig.add_trace(go.Scatter(
                 x=df_tempY['Date_Quarter'],
                 y=df_tempY[value_col],
-            )
-        ]
-    )
+                mode='lines+markers',
+                name=f"{x} ({primary_ticker})"
+            ))
+
+if not fig.data:
+    st.warning("No data matched your selection. Please adjust X or check your dataset.")
+else:
     fig.update_layout(
-        title=f'Bar plot of {", ".join(X)} {Z}',
+        title=f'Line chart of {", ".join(X)} {Z}',
         xaxis_title='Date_Quarter',
         yaxis_title=Z
     )
     fig.update_yaxes(tickformat=".2%")
     st.plotly_chart(fig, use_container_width=True)
-else:
-    st.warning("No data matched your selection. Please adjust X or check your dataset.")
