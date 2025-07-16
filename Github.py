@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 # Load your data
 df_quarter = pd.read_csv('dfsectorquarter.csv')
 df_year = pd.read_csv('dfsectoryear.csv')
+keyitem=pd.read_excel('Key_items.xlsx')
 
 # Sidebar: Choose database
 db_option = st.sidebar.radio(
@@ -23,13 +24,14 @@ tickers = sorted([x for x in df['TICKER'].unique() if isinstance(x, str) and len
 x_options = tickers + bank_type
 
 X = st.sidebar.selectbox("Select Stock Ticker or Bank Type (X):", x_options)
-Y = st.sidebar.number_input("Number of latest periods to plot (Y):", min_value=1, max_value=100, value=10)
+Y = st.sidebar.number_input("Number of latest periods to plot (Y):", min_value=1, max_value=20, value=10)
 Z = st.sidebar.selectbox(
-    "Select Value Column (Z):",
-    [col for col in df.columns if col not in ['TICKER', 'Type', 'Date_Quarter', 'ENDDATE_x']]
+    "Select Value Column (Z):", keyitem['Name'].tolist()
 )
 
 df = df.sort_values(by=['TICKER', 'ENDDATE_x'])
+item=keyitem[keyitem['Name']==Z]['KeyCode']
+item=item.iloc[0]
 
 if len(X)==3:
     df_temp=df[df.TICKER==X]
@@ -45,12 +47,12 @@ fig = go.Figure(
     data=[
         go.Bar(
             x=df_tempY['Date_Quarter'],
-            y=df_tempY[Z]
+            y=df_tempY[item]
         )
     ]
 )
 fig.update_layout(
-    title=f' {X} {Z} by Quarter',
+    title=f'Bar plot of {X} {Z}',
     xaxis_title='Date_Quarter',
     yaxis_title=Z
 )
