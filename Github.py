@@ -31,7 +31,7 @@ Y = st.sidebar.number_input("Number of latest periods to plot (Y):", min_value=1
 Z = st.sidebar.multiselect(
     "Select Value Column(s) (Z):", 
     keyitem['Name'].tolist(),
-    default=['NIM','Loan Yield','NPL','GROUP 2']
+    default=['NIM','Loan yield','NPL','GROUP 2']
 )
 
 # Create columns for every 2 charts
