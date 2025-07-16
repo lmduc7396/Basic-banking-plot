@@ -50,7 +50,7 @@ fig = go.Figure(
     ]
 )
 fig.update_layout(
-    title=f'Bar plot of {Z} by Quarter',
+    title=f' {X} {Z} by Quarter',
     xaxis_title='Date_Quarter',
     yaxis_title=Z
 )
