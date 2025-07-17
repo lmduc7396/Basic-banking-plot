@@ -54,7 +54,6 @@ for idx, z_name in enumerate(Z):
     col = idx % 2 + 1
 
     for i, x in enumerate(X):
-        show_legend = (idx == 0) and (i == 0)
         if len(x) == 3:  # Stock ticker
             matched_rows = df[df['TICKER'] == x]
             if not matched_rows.empty:
@@ -65,7 +64,8 @@ for idx, z_name in enumerate(Z):
                         y=df_tempY[value_col],
                         mode='lines+markers',
                         name=str(x),
-                        line=dict(color=color_sequence[i % len(color_sequence)])
+                        line=dict(color=color_sequence[i % len(color_sequence)]),
+                        showlegend = (idx == 0) and (i == 0)
                     ),
                     row=row,
                     col=col
