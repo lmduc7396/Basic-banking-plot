@@ -31,7 +31,7 @@ def Bankplot():
     
     col1,col2,col3 = st.columns(3)
     with col1:
-        X = st.multiselect("Select Stock Ticker or Bank Type (X):", x_options
+        X = st.multiselect("Select Stock Ticker or Bank Type (X):", x_options,
                           default = ['Private_1']
                           )
     with col2:
