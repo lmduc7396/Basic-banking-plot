@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
+from plotly.subplots import make_subplots
 
 # Load your data
 df_quarter = pd.read_csv('dfsectorquarter.csv')
@@ -34,40 +35,65 @@ Z = st.sidebar.multiselect(
     default = ['NIM','Loan yield','NPL','GROUP 2']
 )
 
-# Loop for each Z
-for z_name in Z:
+#Setup subplot
+
+rows = len(Z) // 2 + 1
+cols = 2 if len(Z) > 1 else 1
+
+fig = make_subplots(
+    rows=rows, 
+    cols=cols, 
+    subplot_titles=Z
+)
+
+#Draw chart
+
+for idx, z_name in enumerate(Z):
     value_col = keyitem[keyitem['Name']==z_name]['KeyCode'].iloc[0]
-    fig = go.Figure()
+    row = idx // 2 + 1
+    col = idx % 2 + 1
+
     for i, x in enumerate(X):
         if len(x) == 3:  # Stock ticker
             matched_rows = df[df['TICKER'] == x]
             if not matched_rows.empty:
                 df_tempY = matched_rows.tail(Y)
-                fig.add_trace(go.Scatter(
-                    x=df_tempY['Date_Quarter'],
-                    y=df_tempY[value_col],
-                    mode='lines+markers',
-                    name=x,
-                    line=dict(color=color_sequence[i % len(color_sequence)])
-                ))
+                fig.add_trace(
+                    go.Scatter(
+                        x=df_tempY['Date_Quarter'],
+                        y=df_tempY[value_col],
+                        mode='lines+markers',
+                        name=str(x),
+                        line=dict(color=color_sequence[i % len(color_sequence)])
+                    ),
+                    row=row,
+                    col=col
+                )
         else:  # Bank type
             matched_rows = df[(df['Type'] == x) & (df['TICKER'].apply(len) > 3)]
             if not matched_rows.empty:
                 primary_ticker = matched_rows.iloc[0]['TICKER']
                 df_tempY = matched_rows[matched_rows['TICKER'] == primary_ticker].tail(Y)
-                fig.add_trace(go.Scatter(
-                    x=df_tempY['Date_Quarter'],
-                    y=df_tempY[value_col],
-                    mode='lines+markers',
-                    name=x,
-                    line=dict(color=color_sequence[i % len(color_sequence)])
-                ))
-    fig.update_layout(
-        width=1200,  
-        height=500, 
-        title=f'Line plot of {', '.join(X)}: {z_name}',
-        xaxis_title='Date_Quarter',
-        yaxis_title=z_name
-    )
-    fig.update_yaxes(tickformat=".2%")
-    st.plotly_chart(fig, use_container_width=True)
+                fig.add_trace(
+                    go.Scatter(
+                        x=df_tempY['Date_Quarter'],
+                        y=df_tempY[value_col],
+                        mode='lines+markers',
+                        name=str(x),
+                        line=dict(color=color_sequence[i % len(color_sequence)])
+                    ),
+                    row=row,
+                    col=col
+                )
+
+fig.update_layout(
+    width=1200,
+    height=500 if len(Z) <= 2 else 900,
+    title_text=f"Banking Metrics: {', '.join(Z)}",
+    showlegend=True,
+    legend_title="Ticker/Type",
+)
+for i in range(1, len(Z)+1):
+    fig.update_yaxes(tickformat=".2%", row=(i-1)//2 + 1, col=(i-1)%2 + 1)
+
+st.plotly_chart(fig, use_container_width=True)
