@@ -27,6 +27,7 @@ Y = st.sidebar.number_input("Number of latest periods to plot (Y):", min_value=1
 Z = st.sidebar.multiselect(
     "Select Value Column(s) (Z):", 
     keyitem['Name'].tolist()
+    default = ['NIM','Loan yield','NPL','GROUP 2']
 )
 if len(Z) > 4:
     st.warning("Please select up to 4 metrics only!")
