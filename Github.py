@@ -1,4 +1,4 @@
-import streamlit as st
+ctimport streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
@@ -10,6 +10,9 @@ df_year = pd.read_csv('dfsectoryear.csv')
 keyitem=pd.read_excel('Key_items.xlsx')
 color_sequence=px.colors.qualitative.Bold
 
+# Sidebar: Choose pages
+page= st.sidebar.selectbox("Choose a page", ("Banking plot","Company Table"))
+
 # Sidebar: Choose database
 db_option = st.sidebar.radio("Choose database:", ("Quarterly", "Yearly"))
 
@@ -18,8 +21,7 @@ if db_option == "Quarterly":
 else:
     df = df_year.copy()
 
-# Sidebar: Choose pages
-page= st.sidebar.radio("Choose a page", ("Banking plot","Company Table"))
+
 
 def Bankplot():
     # Define your options
