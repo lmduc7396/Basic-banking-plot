@@ -1,4 +1,3 @@
-#%%
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
@@ -37,7 +36,7 @@ if len(Z) > 4:
 for z_name in Z:
     value_col = keyitem[keyitem['Name']==z_name]['KeyCode'].iloc[0]
     fig = go.Figure()
-    for x in X:
+    for ix, x in enumerate(X):
         if len(x) == 3:  # Stock ticker
             matched_rows = df[df['TICKER'] == x]
             if not matched_rows.empty:
