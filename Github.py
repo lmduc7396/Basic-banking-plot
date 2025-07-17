@@ -83,6 +83,7 @@ for idx, z_name in enumerate(Z):
                         mode='lines+markers',
                         name=str(x),
                         line=dict(color=color_sequence[i % len(color_sequence)])
+                        showlegend = show_legend
                     ),
                     row=row,
                     col=col
