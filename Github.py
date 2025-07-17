@@ -58,7 +58,7 @@ for z_name in Z:
                     x=df_tempY['Date_Quarter'],
                     y=df_tempY[value_col],
                     mode='lines+markers',
-                    name=x
+                    name=x,
                     line=dict(color=color_sequence[i % len(color_sequence)])
                 ))
     fig.update_layout(
