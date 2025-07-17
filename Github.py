@@ -50,7 +50,7 @@ fig = make_subplots(
 
 for idx, z_name in enumerate(Z):
     value_col = keyitem[keyitem['Name']==z_name]['KeyCode'].iloc[0]
-    metric_values=df[value_col].dropna
+    metric_values=df[value_col].dropna()
     median_value=metric_values.median()
     row = idx // 2 + 1
     col = idx % 2 + 1
