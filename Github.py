@@ -50,8 +50,14 @@ fig = make_subplots(
 
 for idx, z_name in enumerate(Z):
     value_col = keyitem[keyitem['Name']==z_name]['KeyCode'].iloc[0]
+    metric_values=df[value_col].dropna
+    median_value=metric_values.median()
     row = idx // 2 + 1
     col = idx % 2 + 1
+    if median_value > 10:
+        tick_format = ",.2s"  # SI units: k, M, B
+    else:
+        tick_format = ".2%"   # Percent
 
     for i, x in enumerate(X):
         show_legend = (idx == 0)
@@ -96,6 +102,6 @@ fig.update_layout(
     legend_title="Ticker/Type"
 )
 for i in range(1, len(Z)+1):
-    fig.update_yaxes(tickformat=".2%", row=(i-1)//2 + 1, col=(i-1)%2 + 1)
+    fig.update_yaxes(tickformat=tick_format, row=(i-1)//2 + 1, col=(i-1)%2 + 1)
 
 st.plotly_chart(fig, use_container_width=True)
