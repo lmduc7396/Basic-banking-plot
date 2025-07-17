@@ -54,8 +54,6 @@ for idx, z_name in enumerate(Z):
     col = idx % 2 + 1
 
     for i, x in enumerate(X):
-        show_legend = i == 0 # Only show legend on first subplot
-        legend_title="Ticker/Type
         if len(x) == 3:  # Stock ticker
             matched_rows = df[df['TICKER'] == x]
             if not matched_rows.empty:
@@ -92,6 +90,8 @@ fig.update_layout(
     width=1200,
     height=600,
     title_text=f"Banking Metrics: {', '.join(Z)}",
+    show_legend = i == 0, # Only show legend on first subplot
+    legend_title="Ticker/Type
 )
 for i in range(1, len(Z)+1):
     fig.update_yaxes(tickformat=".2%", row=(i-1)//2 + 1, col=(i-1)%2 + 1)
