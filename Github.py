@@ -91,7 +91,7 @@ for idx, z_name in enumerate(Z):
 
 fig.update_layout(
     width=1400,
-    height=1500,
+    height=1200,
     title_text=f"Banking Metrics: {', '.join(Z)}",
     legend_title="Ticker/Type"
 )
