@@ -31,7 +31,9 @@ def Bankplot():
     
     col1,col2,col3 = st.columns(3)
     with col1:
-        X = st.multiselect("Select Stock Ticker or Bank Type (X):", x_options)
+        X = st.multiselect("Select Stock Ticker or Bank Type (X):", x_options
+                          default = ['Private_1']
+                          )
     with col2:
         Y = st.number_input("Number of latest periods to plot (Y):", min_value=1, max_value=20, value=10)
     with col3:
