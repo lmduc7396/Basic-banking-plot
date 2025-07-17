@@ -88,10 +88,10 @@ for idx, z_name in enumerate(Z):
 
 fig.update_layout(
     width=1200,
-    height=600,
+    height=900,
     title_text=f"Banking Metrics: {', '.join(Z)}",
     show_legend = i == 0, # Only show legend on first subplot
-    legend_title="Ticker/Type
+    legend_title="Ticker/Type"
 )
 for i in range(1, len(Z)+1):
     fig.update_yaxes(tickformat=".2%", row=(i-1)//2 + 1, col=(i-1)%2 + 1)
