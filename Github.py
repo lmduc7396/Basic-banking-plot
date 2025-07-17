@@ -54,7 +54,7 @@ for idx, z_name in enumerate(Z):
     col = idx % 2 + 1
 
     for i, x in enumerate(X):
-        show_legend = (idx == 0) and (i == 0)
+        show_legend = (idx == 0)
         if len(x) == 3:  # Stock ticker
             matched_rows = df[df['TICKER'] == x]
             if not matched_rows.empty:
