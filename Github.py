@@ -10,6 +10,10 @@ keyitem=pd.read_excel('Key_items.xlsx')
 color_sequence=px.colors.qualitative.Bold
 
 # Sidebar: Choose database
+st.set_page_config(
+    page_title="Project Banking Online",
+    layout="wide")
+st.subheader("Project Banking Online")
 db_option = st.sidebar.radio("Choose database:", ("Quarterly", "Yearly"))
 
 if db_option == "Quarterly":
@@ -29,9 +33,6 @@ Z = st.sidebar.multiselect(
     keyitem['Name'].tolist(),
     default = ['NIM','Loan yield','NPL','GROUP 2']
 )
-if len(Z) > 4:
-    st.warning("Please select up to 4 metrics only!")
-    Z = Z[:4]
 
 # Loop for each Z
 for z_name in Z:
@@ -62,6 +63,8 @@ for z_name in Z:
                     line=dict(color=color_sequence[i % len(color_sequence)])
                 ))
     fig.update_layout(
+        width=1200,  
+        height=500, 
         title=f'Line plot of {', '.join(X)}: {z_name}',
         xaxis_title='Date_Quarter',
         yaxis_title=z_name
