@@ -114,11 +114,14 @@ def Bankplot():
 
 
 if page == "Banking plot":
-    Bankplot()
     #Setup page:
     st.set_page_config(
         page_title="Project Banking Online",
         layout="wide")
     st.subheader("Project Banking Online")
+    Bankplot()
 elif page == "Company Table":
-    print("Work in progress")
+    #Setup page:
+    st.set_page_config(
+        layout="wide")
+    st.subheader("Work in progress")
