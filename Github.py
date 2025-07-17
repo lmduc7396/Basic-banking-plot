@@ -26,7 +26,7 @@ X = st.sidebar.multiselect("Select Stock Ticker or Bank Type (X):", x_options)
 Y = st.sidebar.number_input("Number of latest periods to plot (Y):", min_value=1, max_value=20, value=10)
 Z = st.sidebar.multiselect(
     "Select Value Column(s) (Z):", 
-    keyitem['Name'].tolist()
+    keyitem['Name'].tolist(),
     default = ['NIM','Loan yield','NPL','GROUP 2']
 )
 if len(Z) > 4:
