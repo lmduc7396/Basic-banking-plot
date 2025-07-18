@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
+import numpy as np
 
 # Load your data
 df_quarter = pd.read_csv('dfsectorquarter.csv')
