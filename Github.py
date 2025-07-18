@@ -117,74 +117,81 @@ def Bankplot():
 
 
 def Banking_table():
-    # Define your options
+    # --- Define User Selection Options ---
     bank_type = ['Sector', 'SOCB', 'Private_1', 'Private_2', 'Private_3']
     tickers = sorted([x for x in df['TICKER'].unique() if isinstance(x, str) and len(x) == 3])
     x_options = bank_type + tickers
-    
-    col1,col2,col3 = st.columns(3)
+
+    col1, col2, col3 = st.columns(3)
     with col1:
-        X = st.selectbox("Select Stock Ticker or Bank Type (X):", x_options,
-                          )
+        X = st.selectbox("Select Stock Ticker or Bank Type (X):", x_options)
     with col2:
         Y = st.number_input("Number of latest periods to plot (Y):", min_value=1, max_value=20, value=10)
-
     with col3:
         if db_option == "Quarterly":
             Z = st.selectbox("QoQ or YoY growth (Z):", ['QoQ', 'YoY'], index=0)
         else:
-            Z = st.selectbox("YoY (Z):", ['QoQ'], index=1)
+            Z = st.selectbox("QoQ or YoY growth (Z):", ['YoY'], index=0)
 
-    #Set up 
-    cols_keep=pd.DataFrame({'Name':['Loan','TOI','Provision expense','PBT','ROA','ROE','NIM','Loan yield','NPL','NPL Formation (%)','GROUP 2','G2 Formation (%)','NPL Coverage ratio','Provision/ Total Loan']})
-    cols_code_keep=cols_keep.merge(keyitem,on='Name',how='left')
-    cols_keep_final=['Date_Quarter']+cols_code_keep['KeyCode'].tolist()
+    # --- Prepare List of Columns to Keep ---
+    cols_keep = pd.DataFrame({
+        'Name': [
+            'Loan', 'TOI', 'Provision expense', 'PBT', 'ROA', 'ROE', 'NIM', 'Loan yield',
+            'NPL', 'NPL Formation (%)', 'GROUP 2', 'G2 Formation (%)',
+            'NPL Coverage ratio', 'Provision/ Total Loan'
+        ]
+    })
+    cols_code_keep = cols_keep.merge(keyitem, on='Name', how='left')
+    cols_keep_final = ['Date_Quarter'] + cols_code_keep['KeyCode'].tolist()
 
-    #Set up data frame for table
+    # --- Filter Data for Table ---
     if X in bank_type:
-        df_temp = df[(df['Type'] == X) & (df['TICKER'].apply(len) > 3)]
-        df_temp= df_temp[cols_keep_final]
+        # Filter by Type (e.g. Sector, SOCB, etc.)
+        df_temp = df[(df['Type'] == X) & (df['TICKER'].apply(lambda t: len(t) > 3))]
     else:
+        # Filter by specific ticker
         df_temp = df[df['TICKER'] == X]
-        df_temp= df_temp[cols_keep_final]
-    
-    #Table for QoQ growth
-    QoQ_change=df_temp.iloc[:,1:].pct_change()*100
-    QoQ_change.columns = QoQ_change.columns.map(
-        dict(zip(cols_code_keep['KeyCode'], cols_code_keep['Name'])))
-    QoQ_change=QoQ_change.add_suffix(' QoQ (%)')
-    QoQ_change=QoQ_change.iloc[:,:4]
-    QoQ_change=pd.concat([df_temp['Date_Quarter'],QoQ_change],axis=1)
+    df_temp = df_temp[cols_keep_final]
 
-    #Table for YoY growth
-    YoY_change=df_temp.iloc[:,1:].pct_change(periods=4)*100
-    YoY_change.columns = YoY_change.columns.map(
-        dict(zip(cols_code_keep['KeyCode'], cols_code_keep['Name'])))
-    YoY_change=YoY_change.add_suffix(' YoY (%)')
-    YoY_change=pd.concat([df_temp['Date_Quarter'],YoY_change],axis=1)
+    # --- Calculate Growth Tables ---
+    def get_growth_table(df_, period, suffix):
+        """Calculate growth (%) and return formatted DataFrame."""
+        growth = df_.iloc[:, 1:].pct_change(periods=period) * 100
+        growth.columns = growth.columns.map(dict(zip(cols_code_keep['KeyCode'], cols_code_keep['Name'])))
+        growth = growth.add_suffix(f' {suffix} (%)')
+        return pd.concat([df_['Date_Quarter'], growth.iloc[:, :4]], axis=1)
 
-    df_temp.columns = df_temp.columns.map(
-        dict(zip(cols_code_keep['KeyCode'], cols_code_keep['Name'])))
-    df_temp=df_temp.iloc[:,1:]
+    QoQ_change = get_growth_table(df_temp, 1, 'QoQ')
+    YoY_change = get_growth_table(df_temp, 4, 'YoY')
 
+    # --- Rename Columns to Friendly Names, Remove Date_Quarter ---
+    df_temp.columns = df_temp.columns.map(dict(zip(cols_code_keep['KeyCode'], cols_code_keep['Name'])))
+    df_temp = df_temp.iloc[:, 1:]
+
+    # --- Combine Data Based on User Choice (QoQ or YoY) ---
     if Z == 'QoQ':
-        df_temp= pd.concat([df_temp,QoQ_change],axis=1)
-        order=pd.DataFrame(['Date_Quarter','Loan','Loan QoQ (%)','TOI','TOI QoQ (%)','Provision expense','Provision expense QoQ (%)','PBT','PBT QoQ (%)',
-                        'ROA','ROE','NIM','Loan yield','NPL','NPL Formation (%)','GROUP 2','G2 Formation (%)','NPL Coverage ratio','Provision/ Total Loan'])
+        df_out = pd.concat([df_temp, QoQ_change], axis=1)
+        col_order = [
+            'Date_Quarter', 'Loan', 'Loan QoQ (%)', 'TOI', 'TOI QoQ (%)', 'Provision expense', 'Provision expense QoQ (%)',
+            'PBT', 'PBT QoQ (%)', 'ROA', 'ROE', 'NIM', 'Loan yield', 'NPL', 'NPL Formation (%)', 'GROUP 2',
+            'G2 Formation (%)', 'NPL Coverage ratio', 'Provision/ Total Loan'
+        ]
     else:
-        df_temp= pd.concat([df_temp,YoY_change],axis=1)
-        order=pd.DataFrame(['Date_Quarter','Loan','Loan YoY (%)','TOI','TOI YoY (%)','Provision expense','Provision expense YoY (%)','PBT','PBT YoY (%)',
-                        'ROA','ROE','NIM','Loan yield','NPL','NPL Formation (%)','GROUP 2','G2 Formation (%)','NPL Coverage ratio','Provision/ Total Loan'])
+        df_out = pd.concat([df_temp, YoY_change], axis=1)
+        col_order = [
+            'Date_Quarter', 'Loan', 'Loan YoY (%)', 'TOI', 'TOI YoY (%)', 'Provision expense', 'Provision expense YoY (%)',
+            'PBT', 'PBT YoY (%)', 'ROA', 'ROE', 'NIM', 'Loan yield', 'NPL', 'NPL Formation (%)', 'GROUP 2',
+            'G2 Formation (%)', 'NPL Coverage ratio', 'Provision/ Total Loan'
+        ]
 
-    df_temp=df_temp.reindex(columns=order[0])
-    df_temp=df_temp.tail(10)
-    df_temp=df_temp.T
-    df_temp.columns=df_temp.iloc[0]
-    df_temp=df_temp[1:]
+    # --- Reindex, Select Last Y Periods, Transpose for Display ---
+    df_out = df_out.reindex(columns=col_order).tail(Y).T
+    df_out.columns = df_out.iloc[0]
+    df_out = df_out[1:]
 
-    # Show the table
+    # --- Show Table in Streamlit ---
     st.write("### Banking Table")
-    st.dataframe(df_temp)
+    st.dataframe(df_out)
 
 if page == "Banking plot":
     #Setup page:
