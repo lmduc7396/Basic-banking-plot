@@ -297,13 +297,13 @@ def conditional_format(df):
             return ""
         abs_num = abs(num)
         if abs_num >= 1_000_000_000:
-            return f"{num/1_000_000_000:,}B"
+            return f"{num/1_000_000_000:,.1f}B"
         elif abs_num >= 1_000_000:
-            return f"{num/1_000_000:,}M"
+            return f"{num/1_000_000:,.1f}M"
         elif abs_num >= 1_000:
-            return f"{num/1_000:,}K"
+            return f"{num/1_000:,.1f}K"
         else:
-            return f"{num:.2f}"
+            return f"{num:.1f}"
     def format_row(row):
         vals = pd.to_numeric(row, errors='coerce').values  # Ensures a NumPy array
         numeric_vals = vals[~np.isnan(vals)]
