@@ -299,8 +299,7 @@ def conditional_format(df):
             return ["{:,}".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
         else:
             return ["{:.2f}%".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
-
-    
+            
     # Apply formatting row-wise, axis=1
     formatted = df.apply(format_row, axis=1, result_type='broadcast')
     return formatted
