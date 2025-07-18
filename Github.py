@@ -209,12 +209,6 @@ def Bankplot():
     
     st.plotly_chart(fig, use_container_width=True)
 
-#Testing
-df_test = df_quarter
-df_test = df_test[(df_test['Type'] == 'Sector') & (df_test['TICKER'].apply(len) > 3)]
-df_test = df_test[['TICKER', 'Type','Date_Quarter']]
-
-
 def Banking_table():
     # --- Define User Selection Options ---
     bank_type = ['Sector', 'SOCB', 'Private_1', 'Private_2', 'Private_3']
@@ -333,15 +327,15 @@ if page == "Banking plot":
 elif page == "Company Table":
     st.subheader("Table")
     df_out = Banking_table()
-    # (Optional) Apply number formatting FIRST
-    # df_out = conditional_format(df_out)   # if conditional_format returns a DataFrame, not all strings
+    formatted = conditional_format(df_out)   # DataFrame with formatted strings
 
+    # Define zebra coloring on DataFrame of strings
     def style_alternate_rows(df):
         colors = ["#f2f2f2", "#ffffff"]
         styled = []
         for i in range(df.shape[0]):
             styled.append([f"background-color: {colors[i % 2]}"] * df.shape[1])
         return pd.DataFrame(styled, index=df.index, columns=df.columns)
-        
-    styled_df = df_out.style.apply(lambda _: style_alternate_rows(df_out), axis=None)
+
+    styled_df = formatted.style.apply(lambda _: style_alternate_rows(formatted), axis=None)
     st.write(styled_df)
