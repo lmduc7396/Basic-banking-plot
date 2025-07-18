@@ -290,20 +290,45 @@ def Banking_table():
     return df_out
 
 def conditional_format(df):
+    def human_format(num):
+        try:
+            num = float(num)
+        except:
+            return ""
+        abs_num = abs(num)
+        if abs_num >= 1_000_000_000:
+            return f"{num/1_000_000_000:.2f}B"
+        elif abs_num >= 1_000_000:
+            return f"{num/1_000_000:.2f}M"
+        elif abs_num >= 1_000:
+            return f"{num/1_000:.2f}K"
+        else:
+            return f"{num:.2f}"
     def format_row(row):
         vals = pd.to_numeric(row, errors='coerce').values  # Ensures a NumPy array
         numeric_vals = vals[~np.isnan(vals)]
         if len(numeric_vals) == 0:
             return [str(v) if v is not None else "" for v in row]
         median_val = np.median(np.abs(numeric_vals))
-        if median_val > 100:
-            return ["{:,}".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
+        if median_val > 10:
+            def format_row(row):
+                vals = pd.to_numeric(row, errors='coerce').values
+                numeric_vals = vals[~np.isnan(vals)]
+                if len(numeric_vals) == 0:
+                    return [str(v) if v is not None else "" for v in row]
+                median_val = np.median(np.abs(numeric_vals))
+                if median_val > 10:
+                    return [human_format(v) if pd.notnull(v) and v != '' else "" for v in row]
+                else:
+                    return ["{:.2f}%".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
         else:
             return ["{:.2f}%".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
-            
+
+    
     # Apply formatting row-wise, axis=1
     formatted = df.apply(format_row, axis=1, result_type='broadcast')
     return formatted
+
 
 if page == "Banking plot":
     #Setup page:
