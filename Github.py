@@ -6,9 +6,9 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 
 # Load your data
-df_quarter = pd.read_csv('Data/dfsectorquarter.csv')
-df_year = pd.read_csv('Data/dfsectoryear.csv')
-keyitem=pd.read_excel('Data/Key_items.xlsx')
+df_quarter = pd.read_csv('dfsectorquarter.csv')
+df_year = pd.read_csv('dfsectoryear.csv')
+keyitem=pd.read_excel('Key_items.xlsx')
 color_sequence=px.colors.qualitative.Bold
 
 # Sidebar: Choose pages
