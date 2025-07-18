@@ -241,7 +241,7 @@ def Banking_table():
     if X in bank_type:
         # Filter by Type (e.g. Sector, SOCB, etc.)
         df_temp = df[(df['Type'] == X) & (df['TICKER'].apply(lambda t: len(t) > 3))]
-        df_temp = df_temp[df_temp['Ticker'] == df_temp['Ticker'].iloc[0]]
+        df_temp = df_temp[df_temp['TICKER'] == df_temp['TICKER'].iloc[0]]
     else:
         # Filter by specific ticker
         df_temp = df[df['TICKER'] == X]
