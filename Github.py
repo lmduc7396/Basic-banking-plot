@@ -311,19 +311,12 @@ def conditional_format(df):
             return [str(v) if v is not None else "" for v in row]
         median_val = np.median(np.abs(numeric_vals))
         if median_val > 10:
-            def format_row(row):
-                vals = pd.to_numeric(row, errors='coerce').values
-                numeric_vals = vals[~np.isnan(vals)]
-                if len(numeric_vals) == 0:
-                    return [str(v) if v is not None else "" for v in row]
-                median_val = np.median(np.abs(numeric_vals))
-                if median_val > 10:
-                    return [human_format(v) if pd.notnull(v) and v != '' else "" for v in row]
-                else:
-                    return ["{:.2f}%".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
+            return [human_format(v) if pd.notnull(v) and v != '' else "" for v in row]
         else:
             return ["{:.2f}%".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
-
+    formatted = df.apply(format_row, axis=1, result_type='broadcast')
+    return formatted
+        
     
     # Apply formatting row-wise, axis=1
     formatted = df.apply(format_row, axis=1, result_type='broadcast')
