@@ -183,9 +183,9 @@ def Banking_table():
     df_temp.columns=df_temp.iloc[0]
     df_temp=df_temp[1:]
 
-   # Show the table
-   st.write("### Banking Table")
-   st.dataframe(df_temp)
+    # Show the table
+    st.write("### Banking Table")
+    st.dataframe(df_temp)
 
 if page == "Banking plot":
     #Setup page:
