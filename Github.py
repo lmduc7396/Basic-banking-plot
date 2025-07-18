@@ -224,7 +224,7 @@ def Banking_table():
         if db_option == "Quarterly":
             Z = st.selectbox("QoQ or YoY growth (Z):", ['QoQ', 'YoY'], index=0)
         else:
-            Z = st.selectbox("QoQ or YoY growth (Z):", ['YoY'], index=0)
+            Z = st.selectbox("QoQ or YoY growth (Z):", ['QoQ'], index=0)
 
     # --- Prepare List of Columns to Keep ---
     cols_keep = pd.DataFrame({
