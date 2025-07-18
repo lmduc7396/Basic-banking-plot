@@ -142,7 +142,7 @@ def Banking_table():
 
     #Set up data frame for table
     if X in bank_type:
-        df_temp = (df[df['Type'] == X) & (df['TICKER'].apply(len) > 3])
+        df_temp = df[(df['Type'] == X) & (df['TICKER'].apply(len) > 3)]
         df_temp= df_temp[cols_keep_final]
     else:
         df_temp = df[df['TICKER'] == X]
