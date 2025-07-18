@@ -116,6 +116,104 @@ def Bankplot():
     st.plotly_chart(fig, use_container_width=True)
 
 
+def Bankplot():
+    # Define your options
+    bank_type = ['Sector', 'SOCB', 'Private_1', 'Private_2', 'Private_3']
+    tickers = sorted([x for x in df['TICKER'].unique() if isinstance(x, str) and len(x) == 3])
+    x_options = bank_type + tickers
+    
+    col1,col2,col3 = st.columns(3)
+    with col1:
+        X = st.multiselect("Select Stock Ticker or Bank Type (X):", x_options,
+                          default = ['Private_1']
+                          )
+    with col2:
+        Y = st.number_input("Number of latest periods to plot (Y):", min_value=1, max_value=20, value=10)
+    with col3:
+        Z = st.multiselect(
+        "Select Value Column(s) (Z):", 
+        keyitem['Name'].tolist(),
+        default = ['NIM','Loan yield','NPL','GROUP 2','NPL Formation (%)', 'G2 Formation (%)']
+    )
+    
+    #Setup subplot
+    
+    rows = len(Z) // 2 + 1
+    cols = 2 if len(Z) > 1 else 1
+    
+    fig = make_subplots(
+        rows=rows, 
+        cols=cols, 
+        subplot_titles=Z
+    )
+    
+    #Draw chart
+    
+    for idx, z_name in enumerate(Z):
+        value_col = keyitem[keyitem['Name']==z_name]['KeyCode'].iloc[0]
+        metric_values=df[value_col].dropna()
+        median_value=metric_values.median()
+        median_value=abs(median_value)
+        row = idx // 2 + 1
+        col = idx % 2 + 1
+        if median_value > 10:
+            tick_format = ",.2s"  # SI units: k, M, B
+        else:
+            tick_format = ".2%"   # Percent
+    
+        for i, x in enumerate(X):
+            show_legend = (idx == 0)
+            if len(x) == 3:  # Stock ticker
+                matched_rows = df[df['TICKER'] == x]
+                if not matched_rows.empty:
+                    df_tempY = matched_rows.tail(Y)
+                    fig.add_trace(
+                        go.Scatter(
+                            x=df_tempY['Date_Quarter'],
+                            y=df_tempY[value_col],
+                            mode='lines+markers',
+                            name=str(x),
+                            line=dict(color=color_sequence[i % len(color_sequence)]),
+                            showlegend = show_legend
+                        ),
+                        row=row,
+                        col=col
+                    )
+            else:  # Bank type
+                matched_rows = df[(df['Type'] == x) & (df['TICKER'].apply(len) > 3)]
+                if not matched_rows.empty:
+                    primary_ticker = matched_rows.iloc[0]['TICKER']
+                    df_tempY = matched_rows[matched_rows['TICKER'] == primary_ticker].tail(Y)
+                    fig.add_trace(
+                        go.Scatter(
+                            x=df_tempY['Date_Quarter'],
+                            y=df_tempY[value_col],
+                            mode='lines+markers',
+                            name=str(x),
+                            line=dict(color=color_sequence[i % len(color_sequence)]),
+                            showlegend = show_legend
+                        ),
+                        row=row,
+                        col=col
+                    )
+    
+    fig.update_layout(
+        width=1400,
+        height=1200,
+        title_text=f"Banking Metrics: {', '.join(Z)}",
+        legend_title="Ticker/Type"
+    )
+    for i in range(1, len(Z)+1):
+        fig.update_yaxes(tickformat=tick_format, row=(i-1)//2 + 1, col=(i-1)%2 + 1)
+    
+    st.plotly_chart(fig, use_container_width=True)
+
+#Testing
+df_test = df_quarter
+df_test = df_test[(df_test['Type'] == 'Sector') & (df_test['TICKER'].apply(len) > 3)]
+df_test = df_test[['TICKER', 'Type','Date_Quarter']]
+
+
 def Banking_table():
     # --- Define User Selection Options ---
     bank_type = ['Sector', 'SOCB', 'Private_1', 'Private_2', 'Private_3']
@@ -188,10 +286,27 @@ def Banking_table():
     df_out = df_out.reindex(columns=col_order).tail(Y).T
     df_out.columns = df_out.iloc[0]
     df_out = df_out[1:]
+    return df_out
 
-    # --- Show Table in Streamlit ---
-    st.write("### Banking Table")
-    st.dataframe(df_out)
+
+
+def conditional_format(df):
+    def format_row(row):
+        # Get median of the row (convert to numeric, skip non-numbers)
+        vals = pd.to_numeric(row, errors='coerce')
+        median_val = np.nanmedian(np.abs(vals))  # use np.nanmedian for robustness
+        
+        # Decide format
+        if median_val > 10:
+            # Use comma separator, 0 decimals
+            return ["{:,}".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
+        else:
+            # Use percent, 2 decimals
+            return ["{:.2f}%".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
+    
+    # Apply formatting row-wise, axis=1
+    formatted = df.apply(format_row, axis=1, result_type='broadcast')
+    return formatted
 
 if page == "Banking plot":
     #Setup page:
@@ -206,4 +321,8 @@ elif page == "Company Table":
         layout="wide")
     st.subheader("Table")
     Banking_table()
-
+    conditional_format()
+    styled = conditional_format(df_out)
+    # --- Show Table in Streamlit ---
+    st.write("### Banking Table")
+    st.dataframe(styled)
