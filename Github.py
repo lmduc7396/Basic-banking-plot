@@ -296,8 +296,8 @@ def conditional_format(df):
         if len(numeric_vals) == 0:
             return [str(v) if v is not None else "" for v in row]
         median_val = np.median(np.abs(numeric_vals))
-        if median_val > 10:
-            return ["{:,}".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
+        if median_val > 100:
+            return ["{:,.2s}".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
         else:
             return ["{:.2f}%".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
             
