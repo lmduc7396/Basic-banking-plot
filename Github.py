@@ -297,11 +297,11 @@ def conditional_format(df):
             return ""
         abs_num = abs(num)
         if abs_num >= 1_000_000_000:
-            return f"{num/1_000_000_000:,.1f}B"
+            return f"{num/1_000_000_000:,}B"
         elif abs_num >= 1_000_000:
-            return f"{num/1_000_000:,.1f}M"
+            return f"{num/1_000_000:,}M"
         elif abs_num >= 1_000:
-            return f"{num/1_000:,.1f}K"
+            return f"{num/1_000:,}K"
         else:
             return f"{num:.1f}"
     def format_row(row):
