@@ -331,9 +331,17 @@ if page == "Banking plot":
     st.subheader("Project Banking Online")
     Bankplot()
 elif page == "Company Table":
-    #Setup page:
     st.subheader("Table")
     df_out = Banking_table()
-    styled = conditional_format(df_out)
+    # (Optional) Apply number formatting FIRST
+    # df_out = conditional_format(df_out)   # if conditional_format returns a DataFrame, not all strings
+
+    def style_alternate_rows(row):
+        if row.name % 2 == 0:
+            return ['background-color: #f2f2f2'] * len(row)  # light gray
+        else:
+            return ['background-color: #ffffff'] * len(row)  # white
+
+    styled_df = df_out.style.apply(style_alternate_rows, axis=1)
     st.write("### Banking Table")
-    st.dataframe(styled)
+    st.write(styled_df)  # Use st.write, NOT st.dataframe
