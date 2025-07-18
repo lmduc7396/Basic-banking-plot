@@ -126,7 +126,7 @@ def Banking_table():
     with col1:
         X = st.selectbox("Select Stock Ticker or Bank Type (X):", x_options)
     with col2:
-        Y = st.number_input("Number of latest periods to plot (Y):", min_value=1, max_value=20, value=10)
+        Y = st.number_input("Number of latest periods to plot (Y):", min_value=1, max_value=20, value=6)
     with col3:
         if db_option == "Quarterly":
             Z = st.selectbox("QoQ or YoY growth (Z):", ['QoQ', 'YoY'], index=0)
