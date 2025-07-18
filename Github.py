@@ -288,20 +288,17 @@ def Banking_table():
     df_out = df_out[1:]
     return df_out
 
-
-
 def conditional_format(df):
     def format_row(row):
-        # Get median of the row (convert to numeric, skip non-numbers)
         vals = pd.to_numeric(row, errors='coerce')
-        median_val = np.nanmedian(np.abs(vals))  # use np.nanmedian for robustness
-        
-        # Decide format
+        numeric_vals = vals[~np.isnan(vals)]
+        if len(numeric_vals) == 0:
+            # If no numbers in row, just return as is
+            return [str(v) if v is not None else "" for v in row]
+        median_val = np.median(np.abs(numeric_vals))
         if median_val > 10:
-            # Use comma separator, 0 decimals
             return ["{:,}".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
         else:
-            # Use percent, 2 decimals
             return ["{:.2f}%".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
     
     # Apply formatting row-wise, axis=1
@@ -317,11 +314,8 @@ if page == "Banking plot":
     Bankplot()
 elif page == "Company Table":
     #Setup page:
-    st.set_page_config(
-        layout="wide")
     st.subheader("Table")
     df_out = Banking_table()
     styled = conditional_format(df_out)
-    # --- Show Table in Streamlit ---
     st.write("### Banking Table")
     st.dataframe(styled)
