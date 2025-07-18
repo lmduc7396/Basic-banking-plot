@@ -290,16 +290,16 @@ def Banking_table():
 
 def conditional_format(df):
     def format_row(row):
-        vals = pd.to_numeric(row, errors='coerce')
-        numeric_vals = vals[~np.isnan(vals)]
-        if len(numeric_vals) == 0:
-            # If no numbers in row, just return as is
-            return [str(v) if v is not None else "" for v in row]
-        median_val = np.median(np.abs(numeric_vals))
-        if median_val > 10:
-            return ["{:,}".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
-        else:
-            return ["{:.2f}%".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
+    vals = pd.to_numeric(row, errors='coerce').values  # Ensures a NumPy array
+    numeric_vals = vals[~np.isnan(vals)]
+    if len(numeric_vals) == 0:
+        return [str(v) if v is not None else "" for v in row]
+    median_val = np.median(np.abs(numeric_vals))
+    if median_val > 10:
+        return ["{:,}".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
+    else:
+        return ["{:.2f}%".format(float(v)) if pd.notnull(v) and v != '' else "" for v in row]
+
     
     # Apply formatting row-wise, axis=1
     formatted = df.apply(format_row, axis=1, result_type='broadcast')
