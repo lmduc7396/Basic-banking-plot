@@ -255,7 +255,7 @@ def Banking_table():
     # --- Calculate Growth Tables ---
     def get_growth_table(df_, period, suffix):
         """Calculate growth (%) and return formatted DataFrame."""
-        growth = df_.iloc[:, 1:].pct_change(periods=period) * 100
+        growth = df_.iloc[:, 1:].pct_change(periods=period)
         growth.columns = growth.columns.map(dict(zip(cols_code_keep['KeyCode'], cols_code_keep['Name'])))
         growth = growth.add_suffix(f' {suffix} (%)')
         return pd.concat([df_['Date_Quarter'], growth.iloc[:, :4]], axis=1)
