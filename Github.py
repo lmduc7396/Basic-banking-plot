@@ -320,7 +320,7 @@ elif page == "Company Table":
     st.set_page_config(
         layout="wide")
     st.subheader("Table")
-    Banking_table()
+    df_out = Banking_table()
     styled = conditional_format(df_out)
     # --- Show Table in Streamlit ---
     st.write("### Banking Table")
